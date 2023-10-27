@@ -51,7 +51,19 @@ export default async ({ event }) => {
         postEphemeral(channel, t("messages.errors.anywhere.files"), user);
         return;
       }
-      await createUpdate(message.files, channel, ts, user, message.text);
+
+      // get all remain reactions and update with it
+      const update = await createUpdate(message.files, channel, ts, user, message.text);
+      message.reactions.forEach(async reaction => {
+        // add the reaction to the scrapbook post
+        prisma.emojiReactions.create({
+          data: {
+            updateId: update.id,
+            emojiTypename: reaction.name
+          }
+        });
+      });
+
     }
     return;
   }
@@ -66,6 +78,7 @@ export default async ({ event }) => {
     }
     await createUpdate(message.files, channel, ts, item_user, message.text);
   }
+
   limiter.schedule(async () => {
     const emojiRecord = await getEmojiRecord(reaction);
     const update = await prisma.updates.findFirst({
@@ -76,7 +89,7 @@ export default async ({ event }) => {
     if (!update) return;
     const postExists = await updateExists(update.id);
     const reactionExists = await emojiExists(reaction, update.id);
-    if (Object.keys(clubEmojis).includes(emojiRecord.name)){
+    if (Object.keys(clubEmojis).includes(emojiRecord.name)) {
       await prisma.clubUpdate.create({
         data: {
           update: {
