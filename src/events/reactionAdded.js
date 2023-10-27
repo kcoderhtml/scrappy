@@ -61,6 +61,9 @@ export default async ({ event }) => {
         console.log("Cannot get user record", err)
       );
       message.reactions.forEach(async reaction => {
+        const userRecord = await getUserRecord(user).catch((err) =>
+          console.log("Cannot get user record", err)
+        );
         // Post has been reacted to with this emoji
         const reactionRecord = await getReactionRecord(reaction.name, update.id).catch(
           (err) => console.log("Cannot get reaction record", err)
