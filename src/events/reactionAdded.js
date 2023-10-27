@@ -52,17 +52,22 @@ export default async ({ event }) => {
         return;
       }
 
+      // This does not work
       // get all remain reactions and update with it
       const update = await createUpdate(message.files, channel, ts, user, message.text);
+      console.log("my implementation, update -> ", update, " reactions -> ", message.reactions);
       message.reactions.forEach(async reaction => {
-        // add the reaction to the scrapbook post
-        prisma.emojiReactions.create({
+        const result = await prisma.emojiReactions.create({
           data: {
             updateId: update.id,
-            emojiTypename: reaction.name
+            emojiTypeName: reaction.name,
+            usersReacted: reaction.users
           }
         });
+        return result;
       });
+      
+      // Doesn't work -- END HERE
 
     }
     return;
@@ -107,6 +112,7 @@ export default async ({ event }) => {
     }
     if (!reactionExists) {
       // Post hasn't been reacted to yet at all, or it has been reacted to, but not with this emoji
+      console.log("otherEmojiRecords -> ", emojiRecord, " update -> ", update);
       await prisma.emojiReactions.create({
         data: {
           updateId: update.id,
