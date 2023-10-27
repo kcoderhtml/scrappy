@@ -56,17 +56,25 @@ export default async ({ event }) => {
       // get all remain reactions and update with it
       const update = await createUpdate(message.files, channel, ts, user, message.text);
       console.log("my implementation, update -> ", update, " reactions -> ", message.reactions);
+
+      const userRecord = await getUserRecord(user).catch((err) =>
+        console.log("Cannot get user record", err)
+      );
       message.reactions.forEach(async reaction => {
-        const result = await prisma.emojiReactions.create({
-          data: {
-            updateId: update.id,
-            emojiTypeName: reaction.name,
-            usersReacted: reaction.users
-          }
-        });
-        return result;
+        // Post has been reacted to with this emoji
+        const reactionRecord = await getReactionRecord(reaction.name, update.id).catch(
+          (err) => console.log("Cannot get reaction record", err)
+        );
+        let usersReacted = reactionRecord.usersReacted;
+        if (userRecord.id) {
+          await usersReacted.push(userRecord.id);
+        }
+        await prisma.emojiReactions.update({
+          where: { id: reactionRecord.id },
+          data: { usersReacted: usersReacted },
+        })
       });
-      
+
       // Doesn't work -- END HERE
 
     }
