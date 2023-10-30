@@ -54,7 +54,7 @@ export default async ({ event }) => {
 
       // get all remain reactions and update with it
       const update = await createUpdate(message.files, channel, ts, user, message.text);
-      message.reactions.forEach(async (idx, reaction) => {
+      message.reactions.forEach(async (reaction, idx) => {
         console.log(idx, "reaction -> ", reaction);
         await prisma.emojiReactions.create({
           updateId: update.id,
