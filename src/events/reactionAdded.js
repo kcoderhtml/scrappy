@@ -58,9 +58,10 @@ export default async ({ event }) => {
       message.reactions.forEach(async (reaction, idx) => {
         console.log(idx, "reaction -> ", reaction);
         await prisma.emojiReactions.create({
-          updateId: update.id,
-          emojiTypeName: reaction.name,
-          usersReacted: reaction.users
+          data: {
+            updateId: update.id,
+            emojiTypeName: reaction.name
+          }
         });
       });
     }
