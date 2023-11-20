@@ -19,7 +19,7 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
 
   if (files.length > 0) {
     uploadItems.push(
-      ...files.map(async (file) => {
+      files.map(async (file) => {
         const publicUrl = await getPublicFileUrl(file.url_private, channel, user);
         if (!publicUrl) {
           await Promise.all([
