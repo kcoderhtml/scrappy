@@ -61,7 +61,7 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
 
   console.log("got here", upload);
 
-  if (upload === "error") { metrics.increment("errors.file_upload", 1); return "error"; };
+  if (files.length > 0 && upload === "error") { metrics.increment("errors.file_upload", 1); return "error"; };
   let userRecord = await getUserRecord(user);
   console.log("userRecord: ", userRecord);
 
