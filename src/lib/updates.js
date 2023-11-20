@@ -56,7 +56,7 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
 
   const upload = await Promise.all(uploadItems).then((values) => {
     console.log("values after all promise: ", values);
-    if (values[1] === "error" || values.length < 2) return "error";
+    if (values[1] === "error" || (values.length < 2 && files.length > 0)) return "error";
   });
 
   console.log("media files -> ", files);
