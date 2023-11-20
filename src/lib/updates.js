@@ -13,7 +13,7 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
   let videos = [];
   let videoPlaybackIds = [];
 
-  let uploadItems;
+  let uploadItems = [];
   if (files.length > 0) {
     uploadItems = files.map(async (file) => {
       const publicUrl = await getPublicFileUrl(file.url_private, channel, user);
