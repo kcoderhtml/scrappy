@@ -59,6 +59,8 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
     if (values[1] === "error" || !values[1]) return "error";
   });
 
+  console.log("got here");
+
   if (upload === "error") { metrics.increment("errors.file_upload", 1); return "error"; };
   let userRecord = await getUserRecord(user);
 
@@ -68,6 +70,8 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
 
   const convertedDate = new Date(date).toISOString();
   const messageText = await formatText(text);
+
+  console.log("got message text");
 
   const update = await prisma.updates.create({
     data: {
@@ -86,6 +90,7 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
     },
   });
 
+  console.log("after posting the update in db: ", update);
   metrics.increment("new_post", 1);
   await incrementStreakCount(user, channel, messageText, ts);
   return update;
