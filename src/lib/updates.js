@@ -59,10 +59,11 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
     if (values[1] === "error" || !values[1]) return "error";
   });
 
-  console.log("got here");
+  console.log("got here", upload);
 
   if (upload === "error") { metrics.increment("errors.file_upload", 1); return "error"; };
   let userRecord = await getUserRecord(user);
+  console.log("userRecord: ", userRecord);
 
   const date = new Date().toLocaleString("en-US", {
     timeZone: userRecord.timezone,
