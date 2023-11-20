@@ -15,41 +15,39 @@ export const createUpdate = async (files = [], channel, ts, user, text) => {
 
   let uploadItems;
   if (files.length > 0) {
-    uploadItems = [
-      ...files.map(async (file) => {
-        const publicUrl = await getPublicFileUrl(file.url_private, channel, user);
-        if (!publicUrl) {
-          await Promise.all([
-            react("remove", channel, ts, "beachball"),
-            react("add", channel, ts, "x"),
-            reply(channel, ts, t("messages.errors.filetype")),
-          ]);
-          return "error";
-        } else if (publicUrl.url.toLowerCase().endsWith("heic")) {
-          await Promise.all([
-            react("remove", channel, ts, "beachball"),
-            react("add", channel, ts, "x"),
-            postEphemeral(channel, t("messages.errors.heic"), user),
-            app.client.chat.delete({
-              token: process.env.SLACK_USER_TOKEN,
-              channel,
-              ts,
-            }),
-          ]);
-          return "error";
-        } else if (publicUrl.url === "big boy") {
-          await Promise.all([
-            react("remove", channel, ts, "beachball"),
-            reply(channel, ts, t("messages.errors.bigimage")),
-          ]);
-        }
-        attachments.push(publicUrl.url);
-        if (publicUrl.muxId) {
-          videos.push(publicUrl.muxId);
-          videoPlaybackIds.push(publicUrl.muxPlaybackId);
-        }
-      })
-    ];
+    uploadItems = files.map(async (file) => {
+      const publicUrl = await getPublicFileUrl(file.url_private, channel, user);
+      if (!publicUrl) {
+        await Promise.all([
+          react("remove", channel, ts, "beachball"),
+          react("add", channel, ts, "x"),
+          reply(channel, ts, t("messages.errors.filetype")),
+        ]);
+        return "error";
+      } else if (publicUrl.url.toLowerCase().endsWith("heic")) {
+        await Promise.all([
+          react("remove", channel, ts, "beachball"),
+          react("add", channel, ts, "x"),
+          postEphemeral(channel, t("messages.errors.heic"), user),
+          app.client.chat.delete({
+            token: process.env.SLACK_USER_TOKEN,
+            channel,
+            ts,
+          }),
+        ]);
+        return "error";
+      } else if (publicUrl.url === "big boy") {
+        await Promise.all([
+          react("remove", channel, ts, "beachball"),
+          reply(channel, ts, t("messages.errors.bigimage")),
+        ]);
+      }
+      attachments.push(publicUrl.url);
+      if (publicUrl.muxId) {
+        videos.push(publicUrl.muxId);
+        videoPlaybackIds.push(publicUrl.muxPlaybackId);
+      }
+    })
   }
 
   uploadItems.unshift(
